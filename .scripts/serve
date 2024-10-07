@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROFILE="${1:-debug}"
+build $PROFILE
+SITE_ROOT=$ROOT/site/$PROFILE $WORKSPACE/target/$PROFILE/typhon-server

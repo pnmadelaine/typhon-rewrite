@@ -2,13 +2,11 @@
 
 ## Nix requirements
 
-Typhon requires Nix >= 2.18 with experimental features "nix-command" and
-"flakes" enabled.
+Typhon requires the experimental feature "nix-command" to be enabled.
 
 ## NixOS
 
-At the moment the preferred way to install Typhon is on NixOS via the exposed
-module.
+The only supported way to install Typhon is on NixOS via the exposed module.
 
 ### Example
 
@@ -17,24 +15,17 @@ Here is a sample NixOS module that deploys a Typhon instance:
 ```nix
 { pkgs, ... }:
 
-let typhon = builtins.getFlake "github:typhon-ci/typhon";
-in {
-  imports = [ typhon.nixosModules.default ];
+{
+  imports = [ (<typhon> + "/nix/module.nix") ]; # import the module in your preferred way
 
-  # enable experimental features
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
-  # install Nix >= 2.18 if necessary
-  nix.package = pkgs.nixVersions.nix_2_18;
+  # enable the "nix-command" feature 
+  nix.settings.experimental-features = [ "nix-command" ];
 
   # enable Typhon
   services.typhon = {
     enable = true;
 
-    # path to the argon2id hash of the admin password
-    # $ SALT=$(cat /dev/urandom | head -c 16 | base64)
-    # $ echo -n password | argon2 "$SALT" -id -e > /etc/secrets/password.txt
-    hashedPasswordFile = "/etc/secrets/password.txt";
+    # TODO
   };
 
   # configure nginx
@@ -42,7 +33,7 @@ in {
     enable = true;
     forceSSL = true;
     enableACME = true;
-    virtualHosts."example.com" = {
+    virtualHosts."etna.typhon-ci.org" = {
       locations."/" = {
         proxyPass = "http://localhost:3000";
         recommendedProxySettings = true;
@@ -60,8 +51,6 @@ Here is a list of options exposed by the NixOS module.
 Mandatory:
 
 - `services.typhon.enable`: a boolean to activate the Typhon instance.
-- `services.typhon.hashedPasswordFile` or `services.typhon.hashedPassword`: the
-  Argon2id hash of the admin password in the PHC string format.
 
 Optional:
 

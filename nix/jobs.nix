@@ -1,12 +1,13 @@
-{
-  inputs ? import ./inputs.nix,
-}:
 let
+  sources = import ./sources.nix;
   system = "x86_64-linux";
+  pkgs = import sources.nixpkgs { inherit system; };
+  typhon = import ./package.nix { inherit system; };
 in
 {
-  build = import ./packages/typhon.nix { inherit inputs system; };
-  doc = import ./packages/doc.nix { inherit inputs system; };
-  formatted = import ./checks/formatted.nix { inherit inputs system; };
-  nixos = import ./checks/nixos.nix { inherit inputs system; };
+  "${system}.build" = typhon;
+  "${system}.cli" = typhon.cli;
+  "${system}.doc" = typhon.doc;
+  "${system}.formatted" = (import ./treefmt.nix { inherit system; }).config.build.check ./..;
+  "${system}.nixosTest" = import ./nixosTest.nix { inherit system; };
 }

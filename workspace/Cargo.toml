@@ -1,0 +1,75 @@
+[workspace]
+members = [
+  "actors",
+  "app",
+  "cli",
+  "core",
+  "nix",
+  "pack",
+  "schema",
+  "server",
+  "types",
+]
+resolver = "2"
+
+[workspace.package]
+version = "1.0.0"
+edition = "2021"
+
+[workspace.dependencies]
+typhon-actors = { path = "actors" }
+typhon-app = { path = "app" }
+typhon-core = { path = "core" }
+typhon-nix = { path = "nix" }
+typhon-schema = { path = "schema" }
+typhon-server = { path = "schema" }
+typhon-types = { path = "types" }
+
+axum = "0.7" # follow same version as leptos_axum
+clap = "*"
+console_error_panic_hook = "*"
+derive_more = "*"
+diesel = "*"
+diesel-async = "*"
+diesel_async_migrations = "*"
+diesel_migrations = "*"
+either = "*"
+futures = "*"
+gloo-console = "*"
+nix-daemon = "*"
+leptos = "*"
+leptos_axum = "*"
+leptos_router = "*"
+rand = "*"
+reqwest = "*"
+serde = "*"
+serde_json = "*"
+tokio = "*"
+tracing-subscriber = "*"
+wasm-bindgen = "*"
+wasm-bindgen-cli-support = "*"
+# futures-core = "*"
+# futures-util = "*"
+# icondata = "*"
+# im = "*"
+# itertools = "*"
+# js-sys = "*"
+# leptos_icons = "*"
+# leptos_meta = "*"
+# leptos_router = "*"
+# regex = "*"
+# serde-wasm-bindgen = "*"
+# serde_repr = "*"
+# serde_with = "*"
+# stderrlog = "*"
+# strip-ansi-escapes = "*"
+# strum = "*"
+# stylers = "*"
+# tokio-stream = "*"
+# tracing = "*"
+# tracing-web = "*"
+# url = "*"
+# urlencoding = "*"
+# wasm-bindgen-futures = "*"
+# wasm-streams = "*"
+# web-sys = { version = "*", features = ["Navigator", "Clipboard", "ReadableStream", "Response", "TextDecoder"] }

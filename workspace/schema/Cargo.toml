@@ -1,0 +1,9 @@
+[package]
+name = "typhon-schema"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+diesel = { workspace = true, features = ["uuid"] }
+diesel_async_migrations.workspace = true
+diesel_migrations.workspace = true

@@ -1,0 +1,12 @@
+[package]
+name = "typhon-cli"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+typhon-nix.workspace = true
+
+clap = { workspace = true, features = ["derive", "env", "string"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+tokio = { workspace = true, features = ["full"] }

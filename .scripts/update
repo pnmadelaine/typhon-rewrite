@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+NODE_DIR="$WORKSPACE/app/assets"
+NODE2NIX_DIR="$ROOT/nix/node2nix"
+
+# update Rust dependencies
+# cargo upgrade -i
+cargo update --manifest-path $MANIFEST
+
+# update Node dependencies
+# ncu -u --cwd "$NODE_DIR"
+# npm install --prefix "$NODE_DIR"
+
+# update Nix dependencies
+ty sources update
+crate2nix-generate
+# node2nix -18 -i "$NODE_DIR/package.json" -o "$NODE2NIX_DIR/node-packages.nix" -c "$NODE2NIX_DIR/default.nix" -e "$NODE2NIX_DIR/node-env.nix"

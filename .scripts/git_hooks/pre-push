@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# set -euo pipefail
+
+fmt
+crate2nix-generate
+git diff --quiet HEAD || (echo "Uncommitted changes!" && exit 1)

@@ -1,0 +1,32 @@
+[package]
+name = "typhon-app"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+typhon-core = { workspace = true, optional = true }
+typhon-types.workspace = true
+
+derive_more = { workspace = true, features = ["from_str"] }
+leptos.workspace = true
+leptos_router.workspace = true
+serde.workspace = true
+
+axum = { workspace = true, optional = true }
+console_error_panic_hook = { workspace = true, optional = true }
+gloo-console = { workspace = true, optional = true }
+leptos_axum = { workspace = true, optional = true }
+wasm-bindgen = { workspace = true, optional = true }
+
+[features]
+default = []
+hydrate = [
+  "dep:console_error_panic_hook",
+  "dep:gloo-console",
+  "dep:wasm-bindgen",
+  "leptos/hydrate",
+]
+ssr = ["dep:axum", "dep:leptos_axum", "dep:typhon-core", "leptos/ssr"]

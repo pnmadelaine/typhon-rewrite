@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+(cd $ROOT ; crate2nix generate -f workspace/Cargo.toml -o nix/cargo.nix)

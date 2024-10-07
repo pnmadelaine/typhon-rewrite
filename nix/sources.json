@@ -1,0 +1,49 @@
+{
+  "crate2nix": {
+    "source": {
+      "type": "github",
+      "owner": "pnmadelaine",
+      "repo": "crate2nix",
+      "branch": "fix-cross-compiling"
+    },
+    "lock": {
+      "type": "github",
+      "owner": "pnmadelaine",
+      "repo": "crate2nix",
+      "rev": "c027e463f25c3b335a92a4a5cc9caab4c2b814f5",
+      "sha256": "642de3f18d93ee33940fc6aeab2a2f3cc962eb8e75768a2876698be41f2e2696"
+    },
+    "outPath": "/nix/store/ym1jawlhsyxzkdrc3p437g0y5w5m2rwy-source"
+  },
+  "nixpkgs": {
+    "source": {
+      "type": "github",
+      "owner": "nixos",
+      "repo": "nixpkgs",
+      "branch": "nixpkgs-unstable"
+    },
+    "lock": {
+      "type": "github",
+      "owner": "nixos",
+      "repo": "nixpkgs",
+      "rev": "f898cbfddfab52593da301a397a17d0af801bbc3",
+      "sha256": "2b1985950da3f4fa4384a4575aef396efdd1db099f914a9da49844c33f4937f1"
+    },
+    "outPath": "/nix/store/8711q2ng7k38b816qw6i3bp4bsl57r70-source"
+  },
+  "treefmt-nix": {
+    "source": {
+      "type": "github",
+      "owner": "numtide",
+      "repo": "treefmt-nix"
+    },
+    "lock": {
+      "type": "github",
+      "owner": "numtide",
+      "repo": "treefmt-nix",
+      "rev": "bebf27d00f7d10ba75332a0541ac43676985dea3",
+      "sha256": "8fa8c2d76bc216c4c60e6636bb51f5da532beb67e7725363b82b40745d5ae0d9"
+    },
+    "outPath": "/nix/store/74wdvbzs22vff4k16ww16kc078afiv6a-source"
+  }
+}

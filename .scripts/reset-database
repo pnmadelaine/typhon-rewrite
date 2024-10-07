@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+dropdb -h "$PGDATA" typhon || true
+createdb -h "$PGDATA" typhon
+
+export MIGRATION_DIRECTORY="$WORKSPACE/schema/migrations"
+diesel migration run
+diesel print-schema > "$WORKSPACE/schema/src/schema.rs"

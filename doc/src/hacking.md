@@ -1,51 +1,39 @@
 # Hacking
 
-Typhon is written in Rust. It consists of four packages:
-- `typhon-core` is the core logic of Typhon
-- `typhon-webapp` is the frontend application
-- `typhon-types` is a common library shared between the two
-- `typhon` is the server and the main package
+Typhon is written in Rust and consists of several crates (located in `/workspace`).
+- `typhon-actors`
+- `typhon-nix`
+- `typhon-core`
+- `typhon-app`
+- `typhon-server`
+- `typhon-pack`
 
 ## Development environment
 
 This documentation assumes that you are using Nix, so you can simply run
 `nix-shell` at the root of the project to enter the development environment.
-Experimental features "nix-command" and "flakes" need to be enabled in your Nix
-configuration for the server to run properly. Nix >= 2.18 is also required but
-it is provided by the Nix shell.
+Experimental feature "nix-command" needs to be enabled in your Nix
+configuration for the server to run properly.
 
 The following instructions assume that you are inside the Nix development
 environment.
 
 ## Dependencies
 
-Typhon uses [Actix](https://actix.rs/) for the web server and
-[Diesel](https://diesel.rs/) for the database management. The webapp is written
-with [Leptos](https://leptos.dev/). Typhon is built with `cargo-leptos`.
+Typhon's main dependencies are:
+- [Axum](https://github.com/tokio-rs/axum/): backend web framework
+- [Diesel](https://diesel.rs/): ORM (database management)
+- [Leptos](https::/leptos.dev/): frontend web framework
+- [Tokio](https://tokio.rs/): asynchronous runtime
+- [nix-daemon](https://crates.io/crates/nix-daemon): wrapper around the Nix daemon
 
-## Building & Running
+## Nix shell commands
 
-If you are building Typhon for the first time, first go to
-`typhon-webapp/assets` and run `npm install`.
+The Nix shell provides a few commands:
 
-Then, to build Typhon, go to the root of the project and run:
+- `build` to compile
+- `pg-start` and `pg-stop` to spawn the database
+- `serve` to run the server
+- `fmt` to format the code
 
-```shell
-build
-```
-
-To run Typhon, create `/nix/var/nix/gcroots/typhon/` and make sure that you have
-write access to the directory. Then go to the root of the project and run:
-
-```shell
-watch
-```
-
-The server will be available at `http://localhost:3000`, with the admin password
-set to `password`. The server will be compiled automatically at each
-modification of the code.
-
-## Formatting
-
-Before submitting changes to Typhon, be sure to format the code using the
-`format` command.
+By default the server is listening at `http://localhost:3000`.

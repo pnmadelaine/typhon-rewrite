@@ -1,18 +1,27 @@
-{
-  inputs ? import ./inputs.nix,
-  systems ? import ./systems.nix,
-  lib ? import ./lib { inherit inputs systems; },
-}:
-{
-  inherit lib;
+rec {
+  mkLib = import ../lib;
 
-  checks = lib.eachSystem (system: import ./checks { inherit inputs system; });
+  mkPackage = import ./package.nix;
 
-  devShells = lib.eachSystem (system: import ./devshells.nix { inherit inputs system; });
+  nixosModules = rec {
+    typhon = import ./module.nix;
+    default = typhon;
+  };
 
-  packages = lib.eachSystem (system: import ./packages { inherit inputs system; });
+  sources = import ./sources.nix;
 
-  nixosModules.default = import ./nixos/typhon.nix { inherit inputs; };
+  lib = mkLib sources.nixpkgs;
 
-  typhonJobs = import ./jobs.nix { inherit inputs; };
+  devShells = lib.eachSystem (system: {
+    default = import ./shell.nix { inherit system; };
+  });
+
+  packages = lib.eachSystem (system: rec {
+    typhon = mkPackage { inherit system; };
+    typhon-cli = typhon.cli;
+    typhon-doc = typhon.doc;
+    default = typhon;
+  });
+
+  jobs = import ./jobs.nix;
 }

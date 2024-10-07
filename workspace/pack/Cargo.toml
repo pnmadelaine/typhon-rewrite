@@ -1,0 +1,7 @@
+[package]
+name = "typhon-pack"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+wasm-bindgen-cli-support.workspace = true

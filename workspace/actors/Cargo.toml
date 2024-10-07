@@ -1,0 +1,8 @@
+[package]
+name = "typhon-actors"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+either.workspace = true
+tokio = { workspace = true, features = ["rt", "sync"] }
