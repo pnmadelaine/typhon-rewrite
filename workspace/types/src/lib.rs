@@ -1,87 +1,136 @@
+use std::marker::PhantomData;
+
 use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GitRef {
+    #[serde(rename = "ref", skip_serializing_if = "Option::is_none")]
+    pub reference: Option<String>,
+    #[serde(rename = "rev", skip_serializing_if = "Option::is_none")]
+    pub revision: Option<String>,
+}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GitLock {
+    #[serde(rename = "ref")]
+    pub reference: String,
+    #[serde(rename = "rev")]
+    pub revision: String,
+}
+
+pub trait Forge {
+    const EXPR: &'static str;
+    fn default_reference(&self) -> String;
+    fn lock(&self, git: &GitRef) -> GitLock;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RawGitRepo {
+    pub url: String,
+}
+impl Forge for RawGitRepo {
+    const EXPR: &'static str =
+        "({ url, ref, rev, .. }: builtins.fetchGit { inherit url ref rev, })";
+    fn default_reference(&self) -> String {
+        todo!()
+    }
+    fn lock(&self, _git: &GitRef) -> GitLock {
+        todo!()
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ForgeGitRepo<T> {
+    pub instance: T,
+    pub owner: String,
+    pub repo: String,
+    pub phantom: PhantomData<T>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Codeberg(Option<String>);
+impl Forge for ForgeGitRepo<Codeberg> {
+    const EXPR: &'static str =
+        "({ instance ? \"codeberg.org\", owner, repo, rev, sha256, ... }: builtins.fetchTarball { url = \"https://${instance}/${owner}/${repo}/archive/${rev}.tar.gz\"; inherit sha256; })";
+    fn default_reference(&self) -> String {
+        todo!()
+    }
+    fn lock(&self, _git: &GitRef) -> GitLock {
+        todo!()
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Github;
+impl Forge for ForgeGitRepo<Github> {
+    const EXPR: &'static str =
+        "({ owner, repo, rev, sha256, ... }: builtins.fetchTarball { url = \"https://github.com/${owner}/${repo}/archive/${rev}.tar.gz\"; inherit sha256; })";
+    fn default_reference(&self) -> String {
+        todo!()
+    }
+    fn lock(&self, _git: &GitRef) -> GitLock {
+        todo!()
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Gitlab(Option<String>);
+impl Forge for ForgeGitRepo<Gitlab> {
+    const EXPR: &'static str =
+        "({ instance ? \"gitlab.com\", owner, repo, rev, sha256, ... }: builtins.fetchTarball { url = \"https://${instance}/${owner}/${repo}/archive/${rev}.tar.gz\"; inherit sha256; })";
+    fn default_reference(&self) -> String {
+        todo!()
+    }
+    fn lock(&self, _git: &GitRef) -> GitLock {
+        todo!()
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ForgeGitSource<T> {
+    #[serde(flatten)]
+    repo: ForgeGitRepo<T>,
+    #[serde(flatten)]
+    git: GitRef,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ForgeGitLock<T> {
+    #[serde(flatten)]
+    repo: ForgeGitRepo<T>,
+    #[serde(flatten)]
+    git: GitLock,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum Source {
     #[serde(rename = "git")]
-    Git {
-        url: String,
-        #[serde(rename = "ref")]
-        reference: Option<String>,
-        #[serde(rename = "rev")]
-        revision: Option<String>,
-    },
+    Git(ForgeGitSource<RawGitRepo>),
     #[serde(rename = "codeberg")]
-    Codeberg {
-        #[serde(default = "default_codeberg_instance")]
-        #[serde(skip_serializing_if = "is_default_codeberg_instance")]
-        instance: String,
-        owner: String,
-        repo: String,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        branch: Option<String>,
-        #[serde(skip_serializing_if = "Option::is_none", rename = "rev")]
-        revision: Option<String>,
-    },
+    Codeberg(ForgeGitSource<Codeberg>),
     #[serde(rename = "github")]
-    GitHub {
-        owner: String,
-        repo: String,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        branch: Option<String>,
-        #[serde(skip_serializing_if = "Option::is_none", rename = "rev")]
-        revision: Option<String>,
-    },
+    Github(ForgeGitSource<Github>),
+    #[serde(rename = "gitlab")]
+    Gitlab(ForgeGitSource<Gitlab>),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "type")]
 pub enum Lock {
     #[serde(rename = "git")]
-    Git {
-        url: String,
-        #[serde(rename = "ref")]
-        reference: String,
-        #[serde(rename = "rev")]
-        revision: String,
-    },
+    Git(ForgeGitLock<RawGitRepo>),
+    #[serde(rename = "codeberg")]
+    Codeberg(ForgeGitLock<Codeberg>),
     #[serde(rename = "github")]
-    GitHub {
-        owner: String,
-        repo: String,
-        #[serde(rename = "rev")]
-        revision: String,
-        sha256: String,
-    },
+    Github(ForgeGitLock<Github>),
+    #[serde(rename = "gitlab")]
+    Gitlab(ForgeGitLock<Gitlab>),
 }
 
-impl Lock {
+impl Source {
     pub fn expr(&self) -> String {
         match self {
-            Self::Git {
-                url,
-                reference,
-                revision,
-            } => {
-                format!("(builtins.fetchGit {{ url = \"{url}\"; ref = \"{reference}\"; rev = \"{revision}\"; }})")
-            }
-            Self::GitHub {
-                owner,
-                repo,
-                revision,
-                sha256,
-            } => {
-                let url = format!("https://github.com/{owner}/{repo}/archive/{revision}.tar.gz");
-                format!("(builtins.fetchTarball {{ url = \"{url}\"; sha256 = \"{sha256}\"; }})")
-            }
+            Self::Git(_src) => RawGitRepo::EXPR.to_owned(),
+            _ => todo!(),
         }
     }
-}
-
-fn default_codeberg_instance() -> String {
-    "codeberg.org".to_owned()
-}
-
-fn is_default_codeberg_instance(instance: &str) -> bool {
-    instance == default_codeberg_instance()
 }
