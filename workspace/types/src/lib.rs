@@ -9,6 +9,7 @@ pub struct GitRef {
     #[serde(rename = "rev", skip_serializing_if = "Option::is_none")]
     pub revision: Option<String>,
 }
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GitLock {
     #[serde(rename = "ref")]
@@ -17,7 +18,7 @@ pub struct GitLock {
     pub revision: String,
 }
 
-pub trait Forge {
+pub trait FetchGit {
     const EXPR: &'static str;
     fn default_reference(&self) -> String;
     fn lock(&self, git: &GitRef) -> GitLock;
@@ -27,7 +28,7 @@ pub trait Forge {
 pub struct RawGitRepo {
     pub url: String,
 }
-impl Forge for RawGitRepo {
+impl FetchGit for RawGitRepo {
     const EXPR: &'static str =
         "({ url, ref, rev, .. }: builtins.fetchGit { inherit url ref rev, })";
     fn default_reference(&self) -> String {
@@ -48,7 +49,7 @@ pub struct ForgeGitRepo<T> {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Codeberg(Option<String>);
-impl Forge for ForgeGitRepo<Codeberg> {
+impl FetchGit for ForgeGitRepo<Codeberg> {
     const EXPR: &'static str =
         "({ instance ? \"codeberg.org\", owner, repo, rev, sha256, ... }: builtins.fetchTarball { url = \"https://${instance}/${owner}/${repo}/archive/${rev}.tar.gz\"; inherit sha256; })";
     fn default_reference(&self) -> String {
@@ -61,7 +62,7 @@ impl Forge for ForgeGitRepo<Codeberg> {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Github;
-impl Forge for ForgeGitRepo<Github> {
+impl FetchGit for ForgeGitRepo<Github> {
     const EXPR: &'static str =
         "({ owner, repo, rev, sha256, ... }: builtins.fetchTarball { url = \"https://github.com/${owner}/${repo}/archive/${rev}.tar.gz\"; inherit sha256; })";
     fn default_reference(&self) -> String {
@@ -74,7 +75,7 @@ impl Forge for ForgeGitRepo<Github> {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Gitlab(Option<String>);
-impl Forge for ForgeGitRepo<Gitlab> {
+impl FetchGit for ForgeGitRepo<Gitlab> {
     const EXPR: &'static str =
         "({ instance ? \"gitlab.com\", owner, repo, rev, sha256, ... }: builtins.fetchTarball { url = \"https://${instance}/${owner}/${repo}/archive/${rev}.tar.gz\"; inherit sha256; })";
     fn default_reference(&self) -> String {

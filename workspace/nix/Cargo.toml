@@ -4,8 +4,8 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-typhon-types.workspace = true
-
+derive_more = { workspace = true, features = ["from"] }
+git2.workspace = true
 nix-daemon.workspace = true
 reqwest = { workspace = true, features = ["json"] }
 serde = { workspace = true, features = ["derive"] }
